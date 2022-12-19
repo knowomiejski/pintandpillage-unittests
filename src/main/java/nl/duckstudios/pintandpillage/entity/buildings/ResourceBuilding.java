@@ -1,0 +1,72 @@
+package nl.duckstudios.pintandpillage.entity.buildings;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import nl.duckstudios.pintandpillage.model.ResourceType;
+
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
+
+@NoArgsConstructor
+@Entity
+public abstract class ResourceBuilding extends Building {
+
+    //TODO: Initialized with maximum localdatetime value to fix the lastCollected nullpointer when calling collectResources
+    @Getter
+    @Setter
+    private LocalDateTime lastCollected = LocalDateTime.MAX;
+
+    @Setter
+    @Getter
+    private int resourcesPerHour;
+
+    @Setter
+    @Getter
+    private ResourceType requiresResources = null;
+
+    @Setter
+    @Getter
+    private ResourceType generatesResource;
+
+    public void collectResources() {
+        //This means the building is still under construction, so no resources are produced.
+        if (lastCollected.isAfter(LocalDateTime.now())) {
+            return;
+        }
+
+        int minutesInAHour = 60;
+        double hoursToCollect = (double) ChronoUnit.MINUTES.between(this.lastCollected, LocalDateTime.now()) / minutesInAHour;
+        int resourcesGenerated = (int) (hoursToCollect * this.resourcesPerHour);
+
+        if (resourcesGenerated == 0) {
+            return;
+        }
+
+        if (this.requiresResources != null) {
+            int resourcesOfRequiredType = super.getVillage().getVillageResources().get(this.requiresResources.name());
+            resourcesGenerated = Math.min(resourcesOfRequiredType, resourcesGenerated);
+            Map<String, Integer> resourcesMap = new HashMap<>();
+            resourcesMap.put(this.requiresResources.name(), resourcesGenerated);
+            super.resourceManager.subtractResources(super.getVillage(), resourcesMap);
+        }
+
+        super.resourceManager.addResources(super.getVillage(), resourcesGenerated, this.generatesResource.name());
+        this.lastCollected = LocalDateTime.now();
+    }
+
+    // TODO: protected to public
+    @Override
+    public void updateVillageState() {
+        if (super.getLevelupFinishedTime() != null) {
+            this.lastCollected = getLevelupFinishedTime();
+        }
+
+        this.collectResources();
+    }
+
+
+}
