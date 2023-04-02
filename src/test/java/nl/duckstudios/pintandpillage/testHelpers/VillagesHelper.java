@@ -103,12 +103,15 @@ public class VillagesHelper {
         Building hq = this.buildingFactory.getBuilding("Headquarters", new Coord(1,2));
         hq.setLevel(10);
         mockVillage.getBuildings().add(hq);
+        hq.setVillage(mockVillage);
         Building lumberyard = this.buildingFactory.getBuilding("Lumberyard", new Coord(1,3));
         lumberyard.setLevel(10);
+        lumberyard.setVillage(mockVillage);
         mockVillage.getBuildings().add(lumberyard);
         Building smith = this.buildingFactory.getBuilding("Smith", new Coord(1,4));
         smith.setLevel(8);
         mockVillage.getBuildings().add(smith);
+        smith.setVillage(mockVillage);
         return mockVillage;
     }
 

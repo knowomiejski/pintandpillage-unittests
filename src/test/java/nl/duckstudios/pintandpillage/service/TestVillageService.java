@@ -73,13 +73,15 @@ public class TestVillageService {
 
     @BeforeEach
     void initialize() {
-        when(this.villageDAOMock.save(any())).thenAnswer(a -> a.getArgument(0));
         this.villageDataMapperMock = mock(VillageDataMapper.class, withSettings().useConstructor(this.villageDAOMock));
         this.villageServiceUnderTesting = new MockVillageService(this.villageDataMapperMock, this.resourceManagerMock, this.worldServiceMock, this.distanceServiceMock);
         this.villageMock = new MockVillage();
         this.villageMock.setVillageUnit(unitHelper.generateVillageUnit("Shield", 1));
     }
 
+    private void mockVillageDAO () {
+        when(this.villageDAOMock.save(any())).thenAnswer(a -> a.getArgument(0));
+    }
     // updateCombatState
     @Test
     public void should_NotCallFightOrReturnUnits_when_AllTravelsAreBeforeTheCurrentDateTime() {
@@ -343,6 +345,7 @@ public class TestVillageService {
 
     @Test
     public void should_BeAbleToBuildAHarbor_when_TheBuildPositionIsSpecificForAHarbor() {
+        this.mockVillageDAO();
         MockVillage buildSpotVillageUnderTesting = this.villagesHelper.generateMockVillageWithBuildableHarborPlace();
         buildSpotVillageUnderTesting = this.villagesHelper.setupHarborRequirements(buildSpotVillageUnderTesting);
         doCallRealMethod().when(this.villageDataMapperMock).createBuilding(any(), any());
@@ -356,6 +359,7 @@ public class TestVillageService {
 
     @Test
     public void should_BeAbleToBuildAHarbor_when_TheBuildPositionIsForAnyBuilding() {
+        this.mockVillageDAO();
         MockVillage buildSpotVillageUnderTesting = this.villagesHelper.generateMockVillageWithBuildableHarborPlace();
         buildSpotVillageUnderTesting = this.villagesHelper.setupHarborRequirements(buildSpotVillageUnderTesting);
         Building harbor = this.buildingFactory.getBuilding("Harbor", new Coord(2,2));
@@ -399,6 +403,7 @@ public class TestVillageService {
 
     @Test
     public void should_NotBeAbleToBuildAHeadquarters_when_ItsAlreadyPresentInAVillage() {
+        this.mockVillageDAO();
         MockVillage buildSpotVillageUnderTesting = this.villagesHelper.generateMockVillage(1);
         Map<String, Integer> villageResources = new HashMap<>();
         villageResources.put("Wood", 99999999);
@@ -418,6 +423,7 @@ public class TestVillageService {
 
     @Test
     public void should_NotBeAbleToBuildAHeadquarters_when_TheCoordsAreNotX6Y6() {
+        this.mockVillageDAO();
         MockVillage buildSpotVillageUnderTesting = this.villagesHelper.generateMockVillage(1);
         Map<String, Integer> villageResources = new HashMap<>();
         villageResources.put("Wood", 99999999);
@@ -452,6 +458,7 @@ public class TestVillageService {
 
     @Test
     public void should_NotShareResourcesWithOtherVillages_when_AUserHasMoreThanOneVillage() {
+        this.mockVillageDAO();
         MockVillage village1UnderTesting = this.villagesHelper.generateMockVillage(1);
         MockVillage village2UnderTesting = this.villagesHelper.generateMockVillage(2);
         village2UnderTesting.setUser(village1UnderTesting.getUser());
@@ -477,6 +484,7 @@ public class TestVillageService {
 
     @Test
     public void should_SubtractPopulation_when_ABuildingIsBuild() {
+        this.mockVillageDAO();
         MockVillage villageUnderTesting = this.villagesHelper.generateMockVillage(1);
         int populationLeftBeforeBuilding = 1000;
 
@@ -514,6 +522,7 @@ public class TestVillageService {
 
     @Test
     public void should_ThrowAnBuildingConditionsNotMetExceptionWhenAVillageTriesToBuildAHarbor_when_TheBuildingRequirementsAreNotMet() {
+        this.mockVillageDAO();
         MockVillage initialVillageUnderTesting = this.villagesHelper.generateMockVillageWithBuildableHarborPlace();
         MockVillage villageUnderTesting = this.villagesHelper.setupInsufficientHarborRequirements(initialVillageUnderTesting);
         doCallRealMethod().when(this.villageDataMapperMock).createBuilding(any(), any());
