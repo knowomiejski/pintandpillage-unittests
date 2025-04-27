@@ -103,7 +103,6 @@ public class TestAuthController {
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof UnmetPasswordRequirementsException));
     }
 
-    //TODO: probably shouldn't return token
     @Test
     public void shouldReturnATokenWhenNoUsernameIsGiven() throws Exception {
         when(this.passwordEncoder.encode(any())).thenReturn(noUsernameMockUserRequest.getPassword());

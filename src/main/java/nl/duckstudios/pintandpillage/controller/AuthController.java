@@ -1,9 +1,6 @@
 package nl.duckstudios.pintandpillage.controller;
 
-import nl.duckstudios.pintandpillage.Exceptions.ForbiddenException;
-import nl.duckstudios.pintandpillage.Exceptions.UnmetEmailRequirementsException;
-import nl.duckstudios.pintandpillage.Exceptions.UnmetPasswordRequirementsException;
-import nl.duckstudios.pintandpillage.Exceptions.UserAlreadyExistsException;
+import nl.duckstudios.pintandpillage.Exceptions.*;
 import nl.duckstudios.pintandpillage.config.JwtTokenUtil;
 import nl.duckstudios.pintandpillage.dao.UserDAO;
 import nl.duckstudios.pintandpillage.entity.User;
@@ -88,7 +85,7 @@ public class AuthController {
             return jwtResult;
 
         } catch (AuthenticationException authExc) {
-            throw new ForbiddenException("Invalid Login Credentials");
+            throw new UnauthorizedException("Invalid Login Credentials"); // <-- change to 401 from 403
         }
     }
 

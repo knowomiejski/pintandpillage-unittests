@@ -389,7 +389,7 @@ public class Village {
         researches.add(new AxeResearch());
         researches.add(new ShieldResearch());
 
-        //TODO: update completed researches with the correct time
+        //TODO: updated completed researches with the correct time
         //have fun!
         for (Research completedResearch : this.completedResearches) {
             researches.stream().filter(r -> r.getResearchName().equals(completedResearch.getResearchName())).findFirst()
